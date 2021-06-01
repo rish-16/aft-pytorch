@@ -1,7 +1,7 @@
 # aft-pytorch
 Unofficial PyTorch implementation of the **Attention Free Transformer** by Zhai, et al. [[abs](https://openreview.net/forum?id=pW--cu2FCHY), [pdf](https://arxiv.org/pdf/2105.14103.pdf)] from Apple Inc.
 
-<img src="pic.png" width=650>
+<img src="https://github.com/rish-16/aft-pytorch/raw/main/pic.png" width=650>
 
 ## Installation
 You can install `aft-pytorch` via `pip`:
