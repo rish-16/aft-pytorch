@@ -94,6 +94,7 @@ class AFT(nn.Module):
         self.layers = nn.ModuleList()
         self.enc = nn.ModuleList([AFTEncoderBlock(dim, hidden_dim) for _ in range(depth)])
         self.dec = nn.ModuleList([AFTDecoderBlock(dim, hidden_dim) for _ in range(depth)])
+        self.out = nn.Linear() # TODO: create output layer
 
     def forward(self, x):
         x = self.enc(x)
