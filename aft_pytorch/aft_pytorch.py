@@ -1,6 +1,42 @@
-import torch
+import torch, math
 from torch import nn, einsum
 import torch.nn.functional as F    
+
+'''
+Taken from the PyTorch docs for Positional Embeddings only
+'''
+class PositionalEncoding(nn.Module):
+    def __init__(self, dim, p=0.1, max_len=5000):
+        super(PositionalEncoding, self).__init__()
+        self.dropout = nn.Dropout(p=p)
+
+        pe = torch.zeros(max_len, dim)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, dim, 2).float() * (-math.log(10000.0) / dim))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0).transpose(0, 1)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        x = x + self.pe[:x.size(0), :]
+        return self.dropout(x)
+
+class MLP(nn.Module):
+    def __init__(self, dim, hidden_dim, dp=0.1):
+        super().__init__()
+        self.l1 = nn.Linear(dim, hidden_dim)
+        self.g1 = nn.GELU()
+        self.l2 = nn.Linear(hidden_dim, dim)
+        self.d1 = nn.Dropout(dp)
+
+    def forward(self, x):
+        x = self.l1(x)
+        x = self.g1(x)
+        x = self.d1(x)
+        out = self.l2(x)
+
+        return out        
 
 class AFTFull(nn.Module):
     def __init__(self, dim, hidden_dim):
@@ -20,6 +56,9 @@ class AFTFull(nn.Module):
         K = self.to_k(x).view(B, T, self.hidden_dim)
         V = self.to_v(x).view(B, T, self.hidden_dim)
 
+        '''
+        From the paper
+        '''
         Q_sig = torch.sigmoid(Q)
         numer = torch.exp(K + self.wbias)
         denom = numer.sum(0)
@@ -28,22 +67,6 @@ class AFTFull(nn.Module):
         Yt = self.to_out(Yt)
 
         return Yt
-
-class MLP(nn.Module):
-    def __init__(self, dim, hidden_dim, dp=0.1):
-        super().__init__()
-        self.l1 = nn.Linear(dim, hidden_dim)
-        self.g1 = nn.GELU()
-        self.l2 = nn.Linear(hidden_dim, dim)
-        self.d1 = nn.Dropout(dp)
-
-    def forward(self, x):
-        x = self.l1(x)
-        x = self.g1(x)
-        x = self.d1(x)
-        out = self.l2(x)
-
-        return out
 
 class AFTEncoderBlock(nn.Module):
     def __init__(self, dim, hidden_dim, p=0.1):
@@ -89,14 +112,20 @@ class AFTDecoderBlock(nn.Module):
         return out
 
 class AFT(nn.Module):
-    def __init__(self, dim, hidden_dim, depth=6):
+    def __init__(self, vocab_size, dim, hidden_dim, enc=None, dec=None, depth=6, p=0.1):
         super().__init__()
         self.layers = nn.ModuleList()
-        self.enc = nn.ModuleList([AFTEncoderBlock(dim, hidden_dim) for _ in range(depth)])
-        self.dec = nn.ModuleList([AFTDecoderBlock(dim, hidden_dim) for _ in range(depth)])
-        self.out = nn.Linear() # TODO: create output layer
+        self.pos_embed = PositionalEncoding(dim, p=p)
+        self.embed = nn.Embedding(vocab_size, dim)
+        self.enc = enc if enc else nn.ModuleList([AFTEncoderBlock(dim, hidden_dim) for _ in range(depth)])
+        # self.dec = nn.ModuleList([AFTDecoderBlock(dim, hidden_dim) for _ in range(depth)])
+        self.dec = dec if dec else nn.Linear(dim, vocab_size)
+        self.dim = dim
 
     def forward(self, x):
+        x = self.embed(x) * math.sqrt(self.dim)
+        print (x.shape)
+        x = self.pos_embed(x)
         x = self.enc(x)
         out = self.dec(x)
 
