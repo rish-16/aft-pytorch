@@ -3,15 +3,13 @@ from torch import nn, einsum
 import torch.nn.functional as F    
 
 class AFTFullAttention(nn.Module):
-    def __init__(self, tsteps, dim, hidden_dim, heads):
+    def __init__(self, dim, hidden_dim, heads):
         super().__init__()
         '''
-        tsteps: the number of time steps in the input sequence
         dim: the embedding dimension of the tokens
         hidden_dim: the hidden dimension used inside AFT Full
         heads: the number of AFT-Full heads
         '''
-        self.tsteps = tsteps
         self.dim = dim
         self.hidden_dim = hidden_dim
         self.heads = heads

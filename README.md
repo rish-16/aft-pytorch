@@ -17,7 +17,6 @@ You can import the Attention Free Transformer (`AFT`) from the package like so:
 from aft_pytorch import AFTFullAttention
 
 layer = AFTFullAttention(
-    tsteps=10,
     dim=512,
     hidden_dim=64,
     heads=8

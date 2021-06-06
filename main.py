@@ -3,7 +3,6 @@ from aft_pytorch import AFTFullAttention
 
 layer = AFTFullAttention(
     dim=512,
-    tsteps=15,
     hidden_dim=200,
     heads=8
 )
