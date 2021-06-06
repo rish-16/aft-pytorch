@@ -1,5 +1,5 @@
 # aft-pytorch
-Unofficial PyTorch implementation of the **Attention Free Transformer** by [Zhai](https://twitter.com/zhaisf?lang=en), et al. [[abs](https://openreview.net/forum?id=pW--cu2FCHY), [pdf](https://arxiv.org/pdf/2105.14103.pdf)] from Apple Inc.
+Unofficial PyTorch implementation of the **Attention Free Transformer**'s AFT-Full layer by [Zhai](https://twitter.com/zhaisf?lang=en), et al. [[abs](https://openreview.net/forum?id=pW--cu2FCHY), [pdf](https://arxiv.org/pdf/2105.14103.pdf)] from Apple Inc.
 
 <img src="https://github.com/rish-16/aft-pytorch/raw/main/pic.png" width=650>
 
@@ -26,6 +26,8 @@ layer = AFTFullAttention(
 x = torch.rand(32, 10, 512)
 y = layer(x) # [32, 10, 512]
 ```
+
+> This layer wrapper plug-and-play with your existing networks / Transformers. You can swap out the Self-Attention layer with the `AFTFullAttention` layer with minimal changes.
 
 ## TODO
 - Add full AFT architecture
