@@ -11,7 +11,7 @@ pip install aft-pytorch
 ```
 
 ## Usage
-You can import the Attention Free Transformer (`AFT`) from the package like so:
+You can import the "AFT-Full" layer (as described in the paper) from the package like so:
 
 ```python
 from aft_pytorch import AFTFullAttention
