@@ -29,9 +29,10 @@ y = layer(x) # [32, 10, 512]
 
 ## TODO
 - Add full AFT architecture
+- Add variants like AFT-Simple, AFT-Conv, AFT-Local
 
 ## Contributing
-If you like this repo, please leave a star! If there are any ammends or suggestions, feel free to raise a PR/issue.
+If you like this repo, please leave a star! If there are any amends or suggestions, feel free to raise a PR/issue.
 
 ## Credits
 ```
