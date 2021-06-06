@@ -14,27 +14,13 @@ pip install aft-pytorch
 You can import the Attention Free Transformer (`AFT`) from the package like so:
 
 ```python
-from aft_pytorch import AFT
+from aft_pytorch import AFTFullAttention
 
-net = AFT(
+layer = AFTFullAttention(
+    tsteps=10,
     dim=512,
-    depth=6,
+    hidden_dim=64,
     heads=8
-)
-
-# a batch of sequences with 10 timesteps of length 512 each
-x = torch.rand(32, 10, 512)
-y = net(x)
-```
-
-If you want to use the AFT Attention layer separately, you can import `AFTAttention`:
-
-```python
-from aft_pytorch import AFTAttention
-
-layer = AFT(
-    dim=512,
-    hidden_dim=64
 )
 
 # a batch of sequences with 10 timesteps of length 512 each
@@ -43,7 +29,7 @@ y = layer(x) # [32, 10, 512]
 ```
 
 ## TODO
-- Add heads > 1
+- Add full AFT architecture
 
 ## Contributing
 If you like this repo, please leave a star! If there are any ammends or suggestions, feel free to raise a PR/issue.
