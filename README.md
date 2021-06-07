@@ -27,7 +27,7 @@ x = torch.rand(32, 10, 512)
 y = layer(x) # [32, 10, 512]
 ```
 
-> This layer wrapper plug-and-play with your existing networks / Transformers. You can swap out the Self-Attention layer with the `AFTFullAttention` layer with minimal changes.
+> This layer wrapper is a 'plug-and-play' with your existing networks / Transformers. You can swap out the Self-Attention layer with the `AFTFullAttention` layer with minimal changes.
 
 ## TODO
 - Add full AFT architecture
