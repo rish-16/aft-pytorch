@@ -1,1 +1,1 @@
-from aft_pytorch.aft_pytorch import AFTFullAttention
+from aft_pytorch.aft_pytorch import AFTFull, AFTSimple

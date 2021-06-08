@@ -1,5 +1,5 @@
 # aft-pytorch
-Unofficial PyTorch implementation of the **Attention Free Transformer**'s AFT-Full layer by [Zhai](https://twitter.com/zhaisf?lang=en), et al. [[abs](https://openreview.net/forum?id=pW--cu2FCHY), [pdf](https://arxiv.org/pdf/2105.14103.pdf)] from Apple Inc.
+Unofficial PyTorch implementation of **Attention Free Transformer**'s layers by [Zhai](https://twitter.com/zhaisf?lang=en), et al. [[abs](https://openreview.net/forum?id=pW--cu2FCHY), [pdf](https://arxiv.org/pdf/2105.14103.pdf)] from Apple Inc.
 
 <img src="https://github.com/rish-16/aft-pytorch/raw/main/pic.png" width=650>
 
@@ -11,12 +11,13 @@ pip install aft-pytorch
 ```
 
 ## Usage
-You can import the "AFT-Full" layer (as described in the paper) from the package like so:
+You can import the **AFT-Full** or **AFT-Simple** layer (as described in the paper) from the package like so:
 
+### `AFTFull`
 ```python
-from aft_pytorch import AFTFullAttention
+from aft_pytorch import AFTFull
 
-layer = AFTFullAttention(
+layer = AFTFull(
     dim=512,
     hidden_dim=64,
     heads=8
@@ -27,11 +28,26 @@ x = torch.rand(32, 10, 512)
 y = layer(x) # [32, 10, 512]
 ```
 
-> This layer wrapper is a 'plug-and-play' with your existing networks / Transformers. You can swap out the Self-Attention layer with the `AFTFullAttention` layer with minimal changes.
+### `AFTSimple`
+```python
+from aft_pytorch import AFTSimple
+
+layer = AFTSimple(
+    dim=512,
+    hidden_dim=64,
+    heads=8
+)
+
+# a batch of sequences with 10 timesteps of length 512 each
+x = torch.rand(32, 10, 512)
+y = layer(x) # [32, 10, 512]
+```
+
+> This layer wrapper is a 'plug-and-play' with your existing networks / Transformers. You can swap out the Self-Attention layer with the available layers in this package with minimal changes.
 
 ## TODO
 - Add full AFT architecture
-- Add variants like AFT-Simple, AFT-Conv, AFT-Local
+- Add variants like, `AFTConv`, `AFTLocal`
 
 ## Contributing
 If you like this repo, please leave a star! If there are any amends or suggestions, feel free to raise a PR/issue.

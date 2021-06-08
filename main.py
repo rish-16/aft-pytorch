@@ -1,7 +1,7 @@
 import torch
-from aft_pytorch import AFTFullAttention
+from aft_pytorch import AFTFull, AFTSimple
 
-layer = AFTFullAttention(
+layer = AFTSimple(
     dim=512,
     hidden_dim=200,
     heads=8

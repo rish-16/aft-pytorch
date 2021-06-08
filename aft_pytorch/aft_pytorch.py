@@ -2,11 +2,10 @@ import torch, math
 from torch import nn, einsum
 import torch.nn.functional as F    
 
-class AFTFullAttention(nn.Module):
-    def __init__(self, dim, hidden_dim, heads):
+class AFTFull(nn.Module):
+    def __init__(self, dim, hidden_dim=64, heads=8):
         super().__init__()
         '''
-        seqlen: the number of tokens in a sequence
         dim: the embedding dimension of the tokens
         hidden_dim: the hidden dimension used inside AFT Full
         heads: the number of AFT-Full heads
@@ -21,7 +20,43 @@ class AFTFullAttention(nn.Module):
 
     def forward(self, x):
         B, T, _ = x.shape
+        Q = self.to_q(x).view(B, self.heads, T, self.hidden_dim)
+        K = self.to_k(x).view(B, self.heads, T, self.hidden_dim)
+        V = self.to_v(x).view(B, self.heads, T, self.hidden_dim)
         wbias = nn.Parameter(torch.rand(self.heads, T, T))
+
+        '''
+        From the paper
+        '''
+        numer = torch.exp(wbias).unsqueeze(0) @ torch.exp(K)
+        denom = numer
+        Q_sig = torch.sigmoid(Q)
+        weighted = torch.mul(numer, V).sum(0) / denom
+        Yt = torch.mul(Q_sig, weighted)
+
+        Yt = Yt.view(B, T, self.heads * self.hidden_dim)
+        Yt = self.to_out(Yt)
+
+        return Yt
+
+class AFTSimple(nn.Module):
+    def __init__(self, dim, hidden_dim=64, heads=8):
+        super().__init__()
+        '''
+        dim: the embedding dimension of the tokens
+        hidden_dim: the hidden dimension used inside AFT Full
+        heads: the number of AFT-Full heads
+        '''
+        self.dim = dim
+        self.hidden_dim = hidden_dim
+        self.heads = heads
+        self.to_q = nn.Linear(dim, hidden_dim * heads)
+        self.to_k = nn.Linear(dim, hidden_dim * heads)
+        self.to_v = nn.Linear(dim, hidden_dim * heads)
+        self.to_out = nn.Linear(heads * hidden_dim, dim) if dim != hidden_dim else nn.Identity()
+
+    def forward(self, x):
+        B, T, _ = x.shape
         Q = self.to_q(x).view(B, self.heads, T, self.hidden_dim)
         K = self.to_k(x).view(B, self.heads, T, self.hidden_dim)
         V = self.to_v(x).view(B, self.heads, T, self.hidden_dim)
@@ -29,16 +64,28 @@ class AFTFullAttention(nn.Module):
         '''
         From the paper
         '''
-        numer = torch.exp(wbias).unsqueeze(0) @ torch.exp(K)
-        denom = numer.sum(0)
-
+        weights = torch.mul(torch.softmax(K, -1), V)
         Q_sig = torch.sigmoid(Q)
-        weighted = torch.mul(numer, V).sum(0) / denom
-        Yt = torch.mul(Q_sig, weighted)
+        Yt = torch.mul(Q_sig, weights)
+
         Yt = Yt.view(B, T, self.heads * self.hidden_dim)
         Yt = self.to_out(Yt)
 
         return Yt
+
+class AFTLocal(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        raise NotImplementedError
+
+class AFTConv(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        raise NotImplementedError
 
 '''
 Taken from the PyTorch docs for Positional Embeddings only
