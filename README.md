@@ -17,6 +17,7 @@ You can import the "AFT-Full" layer (as described in the paper) from the package
 from aft_pytorch import AFTFullAttention
 
 layer = AFTFullAttention(
+    seqlen=10,
     dim=512,
     hidden_dim=64,
     heads=8
