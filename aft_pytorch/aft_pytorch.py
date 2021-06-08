@@ -74,11 +74,44 @@ class AFTSimple(nn.Module):
         return Yt
 
 class AFTLocal(nn.Module):
-    def __init__(self):
+    def __init__(self, dim, hidden_dim, heads,s):
         super().__init__()
+        '''
+        dim: the embedding dimension of the tokens
+        hidden_dim: the hidden dimension used inside AFT Full
+        heads: the number of AFT-Full heads
+        '''
+        self.dim = dim
+        self.hidden_dim = hidden_dim
+        self.heads = heads
+        self.s = s
+        self.to_q = nn.Linear(dim, hidden_dim * heads)
+        self.to_k = nn.Linear(dim, hidden_dim * heads)
+        self.to_v = nn.Linear(dim, hidden_dim * heads)
+        
+        self.to_out = nn.Linear(heads * hidden_dim, dim) if dim != hidden_dim else nn.Identity()
 
     def forward(self, x):
-        raise NotImplementedError
+        B, T, _ = x.shape
+        Q = self.to_q(x).view(B, self.heads, T, self.hidden_dim)
+        K = self.to_k(x).view(B, self.heads, T, self.hidden_dim)
+        V = self.to_v(x).view(B, self.heads, T, self.hidden_dim)
+
+        '''
+        From the paper
+        '''
+        wbias = torch.rand(self.heads, T, 1)
+        wbias = nn.Parameter(torch.Tensor([[wbias[i][j] if math.fabs(i-j)<s else 0 for j in range(T)]for i in range(heads)]))  # learnable pair-wise position bias
+        numer = torch.exp(K)
+        denom = numer.sum(0)
+
+        Q_sig = torch.sigmoid(Q)
+        weighted = torch.mul(numer, V).sum(0) / denom
+        Yt = torch.mul(Q_sig, weighted)
+        Yt = Yt.view(B, T, self.heads * self.hidden_dim)
+        Yt = self.to_out(Yt)
+
+        return Yt
 
 class AFTConv(nn.Module):
     def __init__(self):

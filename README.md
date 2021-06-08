@@ -43,11 +43,27 @@ x = torch.rand(32, 10, 512)
 y = layer(x) # [32, 10, 512]
 ```
 
+### `AFTLocal`
+```python
+from aft_pytorch import AFTLocal
+
+layer = AFTLocal(
+    dim=512,
+    hidden_dim=64,
+    heads=8
+)
+
+# a batch of sequences with 10 timesteps of length 512 each
+x = torch.rand(32, 10, 512)
+y = layer(x) # [32, 10, 512]
+```
+
+
 > This layer wrapper is a 'plug-and-play' with your existing networks / Transformers. You can swap out the Self-Attention layer with the available layers in this package with minimal changes.
 
 ## TODO
 - Add full AFT architecture
-- Add variants like, `AFTConv`, `AFTLocal`
+- Add variants like, `AFTConv`
 
 ## Contributing
 If you like this repo, please leave a star! If there are any amends or suggestions, feel free to raise a PR/issue.
