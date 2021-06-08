@@ -6,7 +6,7 @@ with open('README.md') as readme_file:
 setup(
   name = 'aft_pytorch',
   packages = find_packages(exclude=[]),
-  version = '0.0.4',
+  version = '0.0.5',
   license='MIT',
   description = 'Attention Free Transformer - Pytorch',
   long_description_content_type="text/markdown",

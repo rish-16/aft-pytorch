@@ -3,7 +3,7 @@ from torch import nn, einsum
 import torch.nn.functional as F    
 
 class AFTFullAttention(nn.Module):
-    def __init__(self, seqlen, dim, hidden_dim, heads):
+    def __init__(self, dim, hidden_dim, heads):
         super().__init__()
         '''
         seqlen: the number of tokens in a sequence
@@ -17,11 +17,11 @@ class AFTFullAttention(nn.Module):
         self.to_q = nn.Linear(dim, hidden_dim * heads)
         self.to_k = nn.Linear(dim, hidden_dim * heads)
         self.to_v = nn.Linear(dim, hidden_dim * heads)
-        self.wbias = nn.Parameter(torch.rand(self.heads, seqlen, seqlen))
         self.to_out = nn.Linear(heads * hidden_dim, dim) if dim != hidden_dim else nn.Identity()
 
     def forward(self, x):
         B, T, _ = x.shape
+        wbias = nn.Parameter(torch.rand(self.heads, T, T))
         Q = self.to_q(x).view(B, self.heads, T, self.hidden_dim)
         K = self.to_k(x).view(B, self.heads, T, self.hidden_dim)
         V = self.to_v(x).view(B, self.heads, T, self.hidden_dim)
@@ -29,7 +29,7 @@ class AFTFullAttention(nn.Module):
         '''
         From the paper
         '''
-        numer = torch.exp(self.wbias).unsqueeze(0) @ torch.exp(K)
+        numer = torch.exp(wbias).unsqueeze(0) @ torch.exp(K)
         denom = numer.sum(0)
 
         Q_sig = torch.sigmoid(Q)

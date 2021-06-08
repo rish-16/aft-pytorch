@@ -2,7 +2,6 @@ import torch
 from aft_pytorch import AFTFullAttention
 
 layer = AFTFullAttention(
-    seqlen=15,
     dim=512,
     hidden_dim=200,
     heads=8
