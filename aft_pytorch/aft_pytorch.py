@@ -77,11 +77,45 @@ class AFTSimple(nn.Module):
         return Yt
 
 class AFTLocal(nn.Module):
-    def __init__(self):
+    def __init__(self, max_seqlen, dim, hidden_dim=64,s=256):
         super().__init__()
+        '''
+        max_seqlen: the maximum number of timesteps (sequence length) to be fed in
+        dim: the embedding dimension of the tokens
+        hidden_dim: the hidden dimension used inside AFT Full
+
+        Number of heads is 1 as done in the paper
+        '''
+        self.dim = dim
+        self.hidden_dim = hidden_dim
+        self.to_q = nn.Linear(dim, hidden_dim)
+        self.to_k = nn.Linear(dim, hidden_dim)
+        self.to_v = nn.Linear(dim, hidden_dim)
+        self.project = nn.Linear(hidden_dim, dim)
+        self.wbias = nn.Parameter(torch.Tensor(max_seqlen, max_seqlen))
+        nn.init.xavier_uniform_(self.wbias)
+
 
     def forward(self, x):
-        raise NotImplementedError
+        B, T, _ = x.shape
+        Q = self.to_q(x).view(B, T, self.hidden_dim)
+        K = self.to_k(x).view(B, T, self.hidden_dim)
+        V = self.to_v(x).view(B, T, self.hidden_dim)
+        self.wbias=nn.Parameter(torch.Tensor([[self.wbias[i][j] if math.fabs(i-j)<2 else 0 for j in range(max_seqlen)]for i in range(max_seqlen)]))
+        temp_wbias = self.wbias[:T, :T].unsqueeze(0) # sequences can still be variable length
+
+        '''
+        From the paper
+        '''
+        Q_sig = torch.sigmoid(Q)
+        temp = torch.exp(temp_wbias) @ torch.mul(torch.exp(K), V)
+        weighted = temp / (torch.exp(temp_wbias) @ torch.exp(K))
+        Yt = torch.mul(Q_sig, weighted)
+
+        Yt = Yt.view(B, T, self.hidden_dim)
+        Yt = self.project(Yt)
+
+        return Yt
 
 class AFTConv(nn.Module):
     def __init__(self):
