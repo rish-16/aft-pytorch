@@ -18,7 +18,8 @@ class AFTFull(nn.Module):
         self.to_k = nn.Linear(dim, hidden_dim)
         self.to_v = nn.Linear(dim, hidden_dim)
         self.project = nn.Linear(hidden_dim, dim)
-        self.wbias = nn.Parameter(torch.rand(max_seqlen, max_seqlen))
+        self.wbias = nn.Parameter(torch.Tensor(max_seqlen, max_seqlen))
+        nn.init.xavier_uniform_(self.wbias)
 
     def forward(self, x):
         B, T, _ = x.shape
