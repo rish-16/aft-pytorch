@@ -18,9 +18,9 @@ You can import the **AFT-Full** or **AFT-Simple** layer (as described in the pap
 from aft_pytorch import AFTFull
 
 layer = AFTFull(
+    max_seqlen=20,
     dim=512,
-    hidden_dim=64,
-    heads=8
+    hidden_dim=64
 )
 
 # a batch of sequences with 10 timesteps of length 512 each
@@ -33,9 +33,9 @@ y = layer(x) # [32, 10, 512]
 from aft_pytorch import AFTSimple
 
 layer = AFTSimple(
+    max_seqlen=20,
     dim=512,
-    hidden_dim=64,
-    heads=8
+    hidden_dim=64
 )
 
 # a batch of sequences with 10 timesteps of length 512 each
