@@ -54,12 +54,11 @@ If you like this repo, please leave a star! If there are any amends or suggestio
 
 ## Credits
 ```
-@misc{
-zhai2021an,
-title={An Attention Free Transformer},
-author={Shuangfei Zhai and Walter Talbott and Nitish Srivastava and Chen Huang and Hanlin Goh and Joshua M. Susskind},
-year={2021},
-url={https://openreview.net/forum?id=pW--cu2FCHY}
+@misc{attention-free-transformer,
+title = {An Attention Free Transformer},
+author = {Shuangfei Zhai and Walter Talbott and Nitish Srivastava and Chen Huang and Hanlin Goh and Ruixiang Zhang and Josh Susskind},
+year = {2021},
+URL = {https://arxiv.org/pdf/2105.14103.pdf}
 }
 ```
 
