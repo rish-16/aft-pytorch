@@ -93,6 +93,8 @@ class AFTLocal(nn.Module):
         self.to_v = nn.Linear(dim, hidden_dim)
         self.project = nn.Linear(hidden_dim, dim)
         self.wbias = nn.Parameter(torch.Tensor(max_seqlen, max_seqlen))
+        self.max_seqlen = max_seqlen
+        self.s=s
         nn.init.xavier_uniform_(self.wbias)
 
 
@@ -101,7 +103,7 @@ class AFTLocal(nn.Module):
         Q = self.to_q(x).view(B, T, self.hidden_dim)
         K = self.to_k(x).view(B, T, self.hidden_dim)
         V = self.to_v(x).view(B, T, self.hidden_dim)
-        self.wbias=nn.Parameter(torch.Tensor([[self.wbias[i][j] if math.fabs(i-j)<2 else 0 for j in range(max_seqlen)]for i in range(max_seqlen)]))
+        self.wbias=nn.Parameter(torch.Tensor([[self.wbias[i][j] if math.fabs(i-j)<self.s else 0 for j in range(self.max_seqlen)]for i in range(self.max_seqlen)]))
         temp_wbias = self.wbias[:T, :T].unsqueeze(0) # sequences can still be variable length
 
         '''
