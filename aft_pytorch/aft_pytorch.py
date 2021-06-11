@@ -67,7 +67,7 @@ class AFTSimple(nn.Module):
         '''
         From the paper
         '''
-        weights = torch.mul(torch.softmax(K, -1), V)
+        weights = torch.mul(torch.softmax(K, 1), V).sum(dim=1, keepdim=True)
         Q_sig = torch.sigmoid(Q)
         Yt = torch.mul(Q_sig, weights)
 
@@ -77,12 +77,13 @@ class AFTSimple(nn.Module):
         return Yt
 
 class AFTLocal(nn.Module):
-    def __init__(self, max_seqlen, dim, hidden_dim=64,s=256):
+    def __init__(self, max_seqlen, dim, hidden_dim=64, s=256):
         super().__init__()
         '''
         max_seqlen: the maximum number of timesteps (sequence length) to be fed in
         dim: the embedding dimension of the tokens
         hidden_dim: the hidden dimension used inside AFT Full
+        s: the window size used for AFT-Local in the paper
 
         Number of heads is 1 as done in the paper
         '''
@@ -94,7 +95,7 @@ class AFTLocal(nn.Module):
         self.project = nn.Linear(hidden_dim, dim)
         self.wbias = nn.Parameter(torch.Tensor(max_seqlen, max_seqlen))
         self.max_seqlen = max_seqlen
-        self.s=s
+        self.s = s
         nn.init.xavier_uniform_(self.wbias)
 
 
@@ -103,7 +104,10 @@ class AFTLocal(nn.Module):
         Q = self.to_q(x).view(B, T, self.hidden_dim)
         K = self.to_k(x).view(B, T, self.hidden_dim)
         V = self.to_v(x).view(B, T, self.hidden_dim)
-        self.wbias=nn.Parameter(torch.Tensor([[self.wbias[i][j] if math.fabs(i-j)<self.s else 0 for j in range(self.max_seqlen)]for i in range(self.max_seqlen)]))
+        self.wbias = nn.Parameter(torch.Tensor([
+            [self.wbias[i][j] if math.fabs(i-j) < self.s else 0 for j in range(self.max_seqlen)] 
+            for i in range(self.max_seqlen)
+            ]))
         temp_wbias = self.wbias[:T, :T].unsqueeze(0) # sequences can still be variable length
 
         '''

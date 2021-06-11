@@ -1,7 +1,7 @@
 import torch
-from aft_pytorch import AFTFull, AFTSimple
+from aft_pytorch import AFTFull, AFTSimple, AFTLocal
 
-layer = AFTFull(
+layer = AFTSimple(
     max_seqlen=20,
     dim=512,
     hidden_dim=200
