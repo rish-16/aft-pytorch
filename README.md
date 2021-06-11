@@ -42,6 +42,20 @@ layer = AFTSimple(
 x = torch.rand(32, 10, 512)
 y = layer(x) # [32, 10, 512]
 ```
+### `AFTLocal`
+```python
+from aft_pytorch import AFTLocal
+
+layer = AFTLocal(
+    max_seqlen=20,
+    dim=512,
+    hidden_dim=64
+)
+
+# a batch of sequences with 10 timesteps of length 512 each
+x = torch.rand(32, 10, 512)
+y = layer(x) # [32, 10, 512]
+```
 
 > This layer wrapper is a 'plug-and-play' with your existing networks / Transformers. You can swap out the Self-Attention layer with the available layers in this package with minimal changes.
 
