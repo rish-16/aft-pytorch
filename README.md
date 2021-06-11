@@ -60,9 +60,9 @@ y = layer(x) # [32, 10, 512]
 > This layer wrapper is a 'plug-and-play' with your existing networks / Transformers. You can swap out the Self-Attention layer with the available layers in this package with minimal changes.
 
 ## TODO
-[-] Add full AFT architecture
-[-] Add variants like, `AFTConv`
-[-] Benchmark using Karpathy's [minGPT](https://github.com/karpathy/minGPT)
+- [ ] Add full AFT architecture
+- [ ] Add variants like, `AFTConv`
+- [ ] Benchmark using Karpathy's [minGPT](https://github.com/karpathy/minGPT)
 
 ## Contributing
 If you like this repo, please leave a star! If there are any amends or suggestions, feel free to raise a PR/issue.
