@@ -1,6 +1,8 @@
 # aft-pytorch
 Unofficial PyTorch implementation of **Attention Free Transformer**'s layers by [Zhai](https://twitter.com/zhaisf?lang=en), et al. [[abs](https://openreview.net/forum?id=pW--cu2FCHY), [pdf](https://arxiv.org/pdf/2105.14103.pdf)] from Apple Inc.
 
+> I'd like to thank primary author, Dr. Shuangfei Zhai, for his informal guidance and feedback as I built this package! 
+
 <img src="https://github.com/rish-16/aft-pytorch/raw/main/pic.png" width=650>
 
 ## Installation
